@@ -1,0 +1,389 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+#include <Windows.h>
+#include <locale.h>>
+
+enum list_type_attack { melee_attack = 1, ranged_attack = 2};
+enum attribute_list { enforcer = 1, universal = 2, intelligence = 3, dexterity = 4 };
+
+
+
+
+struct hero {
+	char name_hero[30] = "";
+	attribute_list attribute;
+	list_type_attack type_attack;
+	union {
+		int lenth_attack;
+		int speed;
+	}attack_speed;
+	double persont;
+};
+
+struct list {
+	hero* p_hero;
+	list* p_next_hero;
+};
+
+
+
+void add_hero(list** start) {
+
+	//lis* change = *start;
+	system("cls");
+
+	hero* arc_warden = (hero*)malloc(sizeof(hero));
+
+	printf("------------------------------------------------\n");
+	printf("Введите имя героя Dota2:\n");
+	printf("------------------------------------------------\n");
+	scanf("%s", &arc_warden->name_hero);
+	system("cls");
+
+	printf("-------------------------------------------------------------------------------------------------\n");
+	printf("Введите атрибут вашего героя: universal - 1, enforcer - 2, itnelligence - 3, dexterity - 4\n");
+	printf("-------------------------------------------------------------------------------------------------\n");
+
+	scanf("%d", &arc_warden->attribute);
+	system("cls");
+
+	printf("------------------------------------------------\n");
+	printf("Введите тип атаки вашего героя: melee_attack - 1, ranged_attack - 2\n");
+	printf("------------------------------------------------\n");
+	scanf("%d", &arc_warden->type_attack);
+	system("cls");
+
+	if (arc_warden->type_attack == melee_attack) {
+		printf("------------------------------------------------\n");
+		printf("Введите скорость передвижения вашего героя\n");
+		printf("------------------------------------------------\n");
+		scanf("%d", &arc_warden->attack_speed.speed);
+		system("cls");
+	}
+	else if (arc_warden->type_attack == ranged_attack) {
+		printf("------------------------------------------------\n");
+		printf("Введите дальность атаки вашего героя\n");
+		printf("------------------------------------------------\n");
+		scanf("%d", &arc_warden->attack_speed.lenth_attack);
+		system("cls");
+	}
+	
+	printf("------------------------------------------------\n");
+	printf("Введите винрейт вашего героя\n");
+	printf("------------------------------------------------\n");
+	scanf("%lf", &arc_warden->persont);
+	system("cls");
+
+	list* first = (list*)malloc(sizeof(list));
+
+	first->p_hero = arc_warden;
+	first->p_next_hero = NULL;
+	
+	if (*start == NULL) {
+		(*start) = first;
+		printf("------------------------------------------------\n");
+		printf("Ваш первый герой был успешно добавлен!\n");
+		printf("------------------------------------------------\n");
+		//system("cls");
+	}
+	else {
+		list* change = *start;
+		while (change->p_next_hero != NULL) {
+			change = change->p_next_hero;
+		}
+		change->p_next_hero = first;
+		printf("------------------------------------------------\n");
+		printf("Ваш герой был успешно добавлен!\n");
+		printf("------------------------------------------------\n");
+		//system("cls");
+	}
+
+	
+}
+
+void read_from_file(list** start)
+{
+	FILE* input;
+	input = fopen("base.txt", "r");
+
+	while (!feof(input)){
+		
+		hero* arc_warden = (hero*)malloc(sizeof(hero));
+
+		char a;
+		char type_attack[30] = "";
+		char type_attribute[30] = "";
+		int speed_or_lenth;
+		double b;
+	
+
+		fscanf(input, "%s" "%s" "%s" "%d" "%lf", &(arc_warden->name_hero), &(type_attribute), &type_attack, &speed_or_lenth, &arc_warden->persont);
+		
+		if (type_attribute[0] == 'e') {
+			arc_warden->attribute = enforcer; 
+			
+		}
+		else if (type_attribute[0] == 'u') {
+			arc_warden->attribute = universal;
+			
+		}
+		else if (type_attribute[0] == 'i') {
+			arc_warden->attribute = intelligence;
+			
+		}
+		else {
+			 arc_warden->attribute = dexterity; 
+			 
+		}
+
+		if (type_attack[0] == 'm') {
+			arc_warden->type_attack = melee_attack;
+			arc_warden->attack_speed.speed = speed_or_lenth;
+		}
+		else {
+			arc_warden->type_attack = ranged_attack;
+			arc_warden->attack_speed.lenth_attack = speed_or_lenth;
+		}
+	
+		list* first = (list*)malloc(sizeof(list));
+
+		first->p_hero = arc_warden;
+		first->p_next_hero = NULL;
+
+		if (*start == NULL) {
+			(*start) = first;
+			
+		}
+		else {
+			list* change = *start;
+			while (change->p_next_hero != NULL) {
+				change = change->p_next_hero;
+			}
+			change->p_next_hero = first;
+		}
+	}
+	fclose(input);
+}
+
+void output_in_console_fp_hero(list* start, int i)
+{
+	printf("%2d\t" "%s\t", i, start->p_hero->name_hero);
+	switch (start->p_hero->attribute) {
+	case enforcer: printf("\t\tenforcer "); break;
+	case universal: printf("\tuniversal"); break;
+	case intelligence: printf("\tintelligence"); break;
+	case dexterity: printf("\tdexterity"); break;
+	}
+
+	if (start->p_hero->type_attack == melee_attack) {
+		printf("      melee_attack " "  %5d", start->p_hero->attack_speed.speed);
+	}
+	else {
+		printf("      ranged_attack" "  %5d", start->p_hero->attack_speed.lenth_attack);
+	}
+
+	printf("     %.2f  \n", start->p_hero->persont);
+
+}
+
+void output_in_console(list* start)
+{
+	if (start == NULL) {
+		printf("В базе данных не было найдено ни одного героя\n");
+	}
+	else {
+		list* nachalo = start;
+		int i = 1;
+		while (nachalo != NULL) {
+			output_in_console_fp_hero(nachalo, i);
+			i++;
+			nachalo = nachalo->p_next_hero;
+		}
+
+	}
+}
+
+void output_in_file_fp_hero(list* start, int i)
+{
+	FILE* output;
+	output = fopen("read_base.txt", "a");
+
+	fprintf(output, "%2d\t" "%s\t", i, start->p_hero->name_hero);
+	switch (start->p_hero->attribute) {
+	case enforcer: fprintf(output, "\t\tenforcer "); break;
+	case universal: fprintf(output, "\tuniversal"); break;
+	case intelligence: fprintf(output,"\tintelligence"); break;
+	case dexterity: fprintf(output, "\tdexterity"); break;
+	}
+
+	if (start->p_hero->type_attack == melee_attack) {
+		fprintf(output, "      melee_attack " "  %5d", start->p_hero->attack_speed.speed);
+	}
+	else {
+		fprintf(output, "      ranged_attack" "  %5d", start->p_hero->attack_speed.lenth_attack);
+	}
+
+	fprintf(output, "     %.2f  \n", start->p_hero->persont);
+	fclose(output);
+}
+
+void output_in_file(list* start)
+{
+	remove("read_base.txt");
+	
+	
+	list* nachalo = start;
+	int i = 1;
+	while (nachalo != NULL) {
+		output_in_file_fp_hero(nachalo, i);
+		i++;
+		nachalo = nachalo->p_next_hero;
+	}
+
+	
+
+}
+
+int size_arrive(char* a) {
+	for (int i = 1; i < 31; i++) {
+		if (a[i] == 0) {
+			return i;
+		}
+	}
+}
+
+void search_fp_hero(list* start, char* name)
+{
+	list* search = start;
+	int i = 1;
+	while(search != NULL){
+		if ((memcmp(search->p_hero->name_hero, name, size_arrive(name)) == 0) && (size_arrive(name) == size_arrive(search->p_hero->name_hero))) {
+			output_in_console_fp_hero(search, i);
+			break;
+		}
+		search = search->p_next_hero;
+		i++;
+	}
+}
+
+void delete_fp_hero(list** start, char* name)
+{
+	list* search = *start;
+	list* previous;
+	int i = 1;
+	if ((memcmp(search->p_hero->name_hero, name, size_arrive(name)) == 0) && (size_arrive(name) == size_arrive(search->p_hero->name_hero))) {
+		previous = search->p_next_hero;
+		free(search->p_hero);
+		//free(search->p_next_hero);
+		free(search);
+		search = previous;
+		*start = search;
+		return;
+	}
+	
+	while (search->p_next_hero != NULL) {
+		if ((memcmp((search->p_next_hero)->p_hero->name_hero, name, size_arrive(name)) == 0) && (size_arrive(name) == size_arrive((search->p_next_hero)->p_hero->name_hero)) && ((search->p_next_hero)->p_next_hero == NULL)) {
+			free((search->p_next_hero)->p_hero);
+			free((search->p_next_hero)->p_next_hero);
+			//free((search->p_next_hero));
+			search->p_next_hero = NULL;
+			break;
+		}
+		if ((memcmp((search->p_next_hero)->p_hero->name_hero, name, size_arrive(name)) == 0) && (size_arrive(name) == size_arrive((search->p_next_hero)->p_hero->name_hero))) {
+			//previous = search->p_next_hero;
+			previous = search->p_next_hero->p_next_hero;
+			free((search->p_next_hero)->p_hero);
+			
+			//free((search->p_next_hero)->p_next_hero);
+			//free(search->p_next_hero);
+			search->p_next_hero = previous;
+			break;
+		}
+		search = search->p_next_hero;
+	}
+}
+
+void delete_all_base(list* start)
+{
+	while (start->p_next_hero != NULL) {
+		list* search = start;
+		while (search->p_next_hero != NULL) {
+			
+			if (search->p_next_hero->p_next_hero == NULL) {
+				free(search->p_next_hero->p_hero);
+				free(search->p_next_hero->p_next_hero);
+				search->p_next_hero = NULL;
+				//printf("-");
+				break;
+			}
+			search = search->p_next_hero;
+		}
+	}
+	free(start->p_hero);
+	
+}
+
+
+int main() {
+
+	SetConsoleOutputCP(1251);
+	SetConsoleCP(1251);
+	system("color 02");
+	int flag = 0;
+	bool cnt = true;
+	char name[30] = "";
+
+	list* start = NULL;
+
+	/*read_from_file(&start);
+	delete_all_base(start);
+	output_in_console(start);*/
+	
+	while (cnt == true) {
+		printf("--------------------------------------------------------------\n");
+		printf("Выберите действие с базой данных:\n1 - Заполнить базу данных из файла\n2 - Добавить героя вручную\n3 - Найти и вывести героя\n4 - Удалить выбранного героя\n5 - Очистить базу данных\n6 - Вывести всех героев в файл\n7 - Вывести всех героев в консоль\n0 - Закончить работу с базой данных\n");
+		printf("--------------------------------------------------------------\n\n");
+		scanf("%d", &flag);
+		switch (flag) {
+		case 1: read_from_file(&start); break;
+		case 2: add_hero(&start); break;
+		case 3:
+			//char name[30] = "";
+			printf("--------------------------------------------------------------\n");
+			printf("Введите имя героя, которого вы хотите найти:");
+			printf("--------------------------------------------------------------\n");
+			scanf("%s", &name);
+			search_fp_hero(start, name);
+			break;
+		case 5:
+			delete_all_base(start);
+			start = NULL;
+			break;
+		case 4:
+			//char name[30] = "";
+			printf("--------------------------------------------------------------\n");
+			printf("Введите имя героя, которого вы хотите удалить:");
+			printf("--------------------------------------------------------------\n");
+			scanf("%s", &name);
+			delete_fp_hero(&start, name);
+			break;
+		case 7:
+			output_in_console(start);
+			break;
+		case 6:
+			output_in_file(start);
+			break;
+		case 0:
+			cnt = false;
+			break;
+		}
+	}
+
+
+
+
+}

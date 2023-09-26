@@ -1,0 +1,5 @@
+ 1	timber			enforcer       melee_attack      12     3.00  
+ 2	arc_warden		dexterity      ranged_attack     22     55.65  
+ 3	void_spirit		universal      melee_attack     310     51.70  
+ 4	windranger		universal      ranged_attack    320     61.23  
+ 5	mars			enforcer       melee_attack     295     48.25  

@@ -1,0 +1,5 @@
+arc_warden dexterity ranged_attack 22 55.65
+ember_spirit dexterity melee_attack 300 52.98
+void_spirit universal melee_attack 310 51.70
+windranger universal ranged_attack 320 61.23
+mars enforcer melee_attack 295 48.25
